@@ -140,7 +140,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = {"https://node-to-code-frontend.onrender.com", "http://localhost:5173"}, allowCredentials = "true")
 public class UserController {
 
     @Autowired
@@ -258,9 +258,10 @@ public class UserController {
 
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
-                .secure(false) // ⚠️ TRUE in production (HTTPS)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
+                .sameSite("None")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
@@ -319,10 +320,10 @@ public class UserController {
 
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .httpOnly(true)
-                .secure(false) // ⚠️ TRUE in production
+                .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());

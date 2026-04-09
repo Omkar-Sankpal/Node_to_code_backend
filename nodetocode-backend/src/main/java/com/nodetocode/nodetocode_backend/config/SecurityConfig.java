@@ -69,7 +69,11 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Allow both production and local dev origins
+        config.setAllowedOrigins(List.of(
+                "https://node-to-code-frontend.onrender.com",
+                "http://localhost:5173"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

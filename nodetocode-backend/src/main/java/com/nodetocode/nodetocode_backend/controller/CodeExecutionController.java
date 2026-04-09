@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/code")
 @RequiredArgsConstructor
 @CrossOrigin(
-        origins = "http://localhost:5173",
+        origins = {"https://node-to-code-frontend.onrender.com", "http://localhost:5173"},
         allowCredentials = "true",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
