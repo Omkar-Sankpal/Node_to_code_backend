@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,19 @@ public class ArenaController {
         m.put("startedAt", t.getStartedAt() != null ? t.getStartedAt().toString() : null);
         m.put("finishedAt", t.getFinishedAt() != null ? t.getFinishedAt().toString() : null);
         m.put("createdAt", t.getCreatedAt() != null ? t.getCreatedAt().toString() : null);
+
+        // Send absolute timestamps so clients can do timezone-safe countdown math.
+        if (t.getStartedAt() != null) {
+            long startedAtEpochMs = t.getStartedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+            m.put("startedAtEpochMs", startedAtEpochMs);
+
+            if (t.getDurationSeconds() != null) {
+                m.put("endsAtEpochMs", startedAtEpochMs + (t.getDurationSeconds() * 1000L));
+            }
+        }
         return m;
     }
 
