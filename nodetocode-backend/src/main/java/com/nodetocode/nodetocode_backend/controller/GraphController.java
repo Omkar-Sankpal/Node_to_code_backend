@@ -39,6 +39,9 @@ public class GraphController {
                     graphDTO.getNodes() != null ? graphDTO.getNodes().size() : 0,
                     graphDTO.getEdges() != null ? graphDTO.getEdges().size() : 0);
             User currentUser = userService.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+            }
             log.info("Authenticated user: {} (id={})", currentUser.getEmail(), currentUser.getId());
             GraphDTO saved = graphService.saveGraph(projectId, graphDTO, currentUser);
             log.info("Graph saved successfully for project {}", projectId);
@@ -56,6 +59,9 @@ public class GraphController {
         try {
             log.info("GET /api/projects/{}/graph", projectId);
             User currentUser = userService.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+            }
             log.info("Authenticated user: {} (id={})", currentUser.getEmail(), currentUser.getId());
             GraphDTO graph = graphService.loadGraph(projectId, currentUser);
             log.info("Graph loaded for project {} — {} nodes, {} edges",
@@ -75,6 +81,9 @@ public class GraphController {
     public ResponseEntity<?> generatePrompt(@PathVariable Long projectId) {
         try {
             User currentUser = userService.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+            }
             String prompt = graphService.generateAndSavePrompt(projectId, currentUser);
             return ResponseEntity.ok(Map.of("prompt", prompt));
         } catch (Exception e) {
@@ -92,6 +101,9 @@ public class GraphController {
         try {
             log.info("POST /api/projects/{}/graph/generate-code", projectId);
             User currentUser = userService.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+            }
 
             // If a graph body was provided, save it first so we generate from latest state
             if (graphDTO != null && graphDTO.getNodes() != null && !graphDTO.getNodes().isEmpty()) {
@@ -147,6 +159,9 @@ public class GraphController {
         try {
             log.info("POST /api/projects/{}/graph/get-prompt", projectId);
             User currentUser = userService.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+            }
 
             // Save graph first if provided
             if (graphDTO != null && graphDTO.getNodes() != null && !graphDTO.getNodes().isEmpty()) {

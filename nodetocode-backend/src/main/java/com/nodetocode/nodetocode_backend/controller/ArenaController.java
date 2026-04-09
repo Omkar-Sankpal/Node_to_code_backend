@@ -4,6 +4,7 @@ import com.nodetocode.nodetocode_backend.model.ArenaTest;
 import com.nodetocode.nodetocode_backend.model.ArenaTestMode;
 import com.nodetocode.nodetocode_backend.model.User;
 import com.nodetocode.nodetocode_backend.service.ArenaTestService;
+import com.nodetocode.nodetocode_backend.service.RecommenderService;
 import com.nodetocode.nodetocode_backend.service.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ArenaController {
 
     private final ArenaTestService arenaTestService;
     private final UserService userService;
+    private final RecommenderService recommenderService;
 
     /* ── Start a new test ── */
     @PostMapping("/start")
@@ -105,6 +107,20 @@ public class ArenaController {
         return ResponseEntity.ok(arenaTestService.getStats(currentUser.getId()));
     }
 
+    /* ── Get AI-powered topic recommendation ── */
+    @PostMapping("/recommend")
+    public ResponseEntity<?> recommend(@RequestBody RecommendRequest request) {
+        User currentUser = userService.getCurrentUser();
+        if (currentUser == null) return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+
+        List<String> solvedTopics = request != null ? request.getSolvedTopics() : null;
+        if (solvedTopics == null || solvedTopics.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "No solved topics provided"));
+        }
+
+        return ResponseEntity.ok(recommenderService.getRecommendation(solvedTopics));
+    }
+
     /* ── Helper: ArenaTest → Map ── */
     private Map<String, Object> toMap(ArenaTest t) {
         Map<String, Object> m = new LinkedHashMap<>();
@@ -145,5 +161,10 @@ public class ArenaController {
     @Data
     public static class FinishRequest {
         private List<Long> solvedProblemIds;
+    }
+
+    @Data
+    public static class RecommendRequest {
+        private List<String> solvedTopics;
     }
 }
